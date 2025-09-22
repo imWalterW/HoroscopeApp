@@ -35,17 +35,18 @@ class UserCredentials(BaseModel): email: EmailStr; password: str = Field(..., mi
 # --- Sinhala Translation Maps ---
 ZODIAC_SIGNS_SI = { "Aries": "මේෂ", "Taurus": "වෘෂභ", "Gemini": "මිථුන", "Cancer": "කටක", "Leo": "සිංහ", "Virgo": "කන්‍යා", "Libra": "තුලා", "Scorpio": "වෘශ්චික", "Sagittarius": "ධනු", "Capricorn": "මකර", "Aquarius": "කුම්භ", "Pisces": "මීන" }
 NAKSHATRA_SI = ["අස්විද", "බෙරණ", "කැති", "රෙහෙණ", "මුලසිර", "අද", "පුනාවස", "පුෂ", "අස්ලිය", "මා", "පුවපල්", "උත්‍රපල්", "හත", "සිත", "සා", "විසා", "අනුර", "දෙට", "මුල", "පුවසල", "උත්‍රසල", "සුවණ", "දෙනට", "සියාවස", "පුවපුටුප", "උත්‍රපුටුප", "රේවතී"]
+PLANET_LIST_SI = { 'Sun': 'රවි', 'Moon': 'සඳු', 'Mars': 'කුජ', 'Mercury': 'බුධ', 'Jupiter': 'ගුරු', 'Venus': 'සිකුරු', 'Saturn': 'ශනි', 'Rahu': 'රාහු', 'Ketu': 'කේතු' }
 
 # --- Astrological Calculation Engine ---
 ZODIAC_SIGNS_EN = [ "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces" ]
-PLANET_LIST = { 'Sun': 'රවි', 'Moon': 'සඳු', 'Mars': 'කුජ', 'Mercury': 'බුධ', 'Jupiter': 'ගුරු', 'Venus': 'සිකුරු', 'Saturn': 'ශනි', 'Rahu': 'රාහු', 'Ketu': 'කේතු' }
+PLANET_LIST = { 'Sun': swe.SUN, 'Moon': swe.MOON, 'Mars': swe.MARS, 'Mercury': swe.MERCURY, 'Jupiter': swe.JUPITER, 'Venus': swe.VENUS, 'Saturn': swe.SATURN, 'Rahu': swe.MEAN_NODE }
 
 def get_sign(longitude: float) -> str:
     return ZODIAC_SIGNS_EN[int(longitude / 30)]
 
 def calculate_astro_details(date_str, time_str, lat, lon):
-    # This entire function is the same as the last working version you uploaded
-    # It correctly calculates the chart data
+    # This entire function is the same as the last working version.
+    # It correctly calculates the chart data.
     year, month, day = map(int, date_str.split('-'))
     hour, minute = map(int, time_str.split(':'))
     dt_local_naive = datetime.datetime(year, month, day, hour, minute)
@@ -58,12 +59,10 @@ def calculate_astro_details(date_str, time_str, lat, lon):
     tropical_lagna_long = ascmc[0]
     ayanamsa_value = swe.get_ayanamsa_ut(jd_utc)
     lagna_long = (tropical_lagna_long - ayanamsa_value + 360) % 360
-    d1_planets = {name: get_sign(swe.calc_ut(jd_utc, swe.SUN + i, swe.FLG_SIDEREAL)[0][0]) for i, name in enumerate(PLANET_LIST.keys()) if name not in ['Rahu', 'Ketu']}
+    d1_planets = {name: get_sign(swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0]) for name, planet_id in PLANET_LIST.items()}
     rahu_long = swe.calc_ut(jd_utc, swe.MEAN_NODE, swe.FLG_SIDEREAL)[0][0]
-    d1_planets['Rahu'] = get_sign(rahu_long)
     d1_planets['Ketu'] = get_sign((rahu_long + 180) % 360)
-    d9_planets = {name: get_sign((swe.calc_ut(jd_utc, swe.SUN + i, swe.FLG_SIDEREAL)[0][0] * 9) % 360) for i, name in enumerate(PLANET_LIST.keys()) if name not in ['Rahu', 'Ketu']}
-    d9_planets['Rahu'] = get_sign((rahu_long * 9) % 360)
+    d9_planets = {name: get_sign((swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0] * 9) % 360) for name, planet_id in PLANET_LIST.items()}
     d9_planets['Ketu'] = get_sign(((rahu_long + 180) % 360 * 9) % 360)
     d1_data = {"lagna": get_sign(lagna_long), "planets": d1_planets}
     d9_data = {"lagna": get_sign((lagna_long * 9) % 360), "planets": d9_planets}
@@ -92,28 +91,39 @@ async def generate_reading(data: ChartData):
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured on the server.")
     
-    # Format the chart data for the prompt
-    d1_chart_sinhala = {PLANET_LIST[p]: ZODIAC_SIGNS_SI[s] for p, s in data.d1_chart['planets'].items()}
-    d9_chart_sinhala = {PLANET_LIST[p]: ZODIAC_SIGNS_SI[s] for p, s in data.d9_chart['planets'].items()}
+    # Format the chart data into a readable string for the prompt
+    d1_chart_sinhala = {PLANET_LIST_SI[p]: ZODIAC_SIGNS_SI[s] for p, s in data.d1_chart['planets'].items()}
     
+    # --- NEW, MORE DETAILED PROMPT ---
     prompt = f"""
-    You are 'Daivaya Guru', an expert Vedic Astrologer from Sri Lanka with deep knowledge of traditional Jyotish. Your tone is wise, respectful, and encouraging. Generate a basic, introductory horoscope reading in the SINHALA language only.
+    You are 'Daivaya Guru', an expert Vedic Astrologer from Sri Lanka with deep knowledge of traditional Jyotish. Your tone is wise, respectful, and encouraging. Generate a comprehensive but introductory horoscope reading in the SINHALA language only.
 
     The user's birth chart data is as follows:
     - Lagna: {ZODIAC_SIGNS_SI[data.d1_chart['lagna']]}
-    - Navamsa Lagna: {ZODIAC_SIGNS_SI[data.d9_chart['lagna']]}
     - Rasi Chart Placements (D1): {d1_chart_sinhala}
-    - Navamsa Chart Placements (D9): {d9_chart_sinhala}
 
-    Structure the reading with the following markdown headings in Sinhala:
+    Based on this data, write a reading with the following markdown headings in Sinhala:
 
     ### හැඳින්වීම (Introduction)
-    ### මූලික ස්වභාවය (Core Nature)
-    ### ශක්තීන් සහ අභියෝග (Strengths and Challenges)
-    ### Pro අනුවාදය (Pro Version)
+    Start with a respectful greeting. Mention the user's Lagna as the foundation of their life's journey.
 
-    Under the "Pro අනුවාදය" heading, write a short, encouraging message inviting the user to upgrade to a pro version for a more detailed analysis of life areas like career, marriage, and future dasha periods.
-    The final output must be ONLY the Sinhala reading, starting with the title '# ජන්ම පත්‍ර විග්‍රහය'.
+    ### පෞරුෂය සහ මූලික ස්වභාවය (Personality and Core Nature)
+    Analyze the core characteristics of the Lagna sign. Consider the placement of the Lagna lord (the planet that rules the Lagna sign) and what its position in a particular house signifies about the user's focus in life. Briefly mention the influence of the Moon's sign (Chandra Rasi) on their mind and emotions.
+
+    ### ප්‍රධාන ජීවන ක්ෂේත්‍ර (Key Life Areas)
+    For this basic reading, provide a brief, general overview.
+    - Analyze the 10th house for career potential.
+    - Analyze the 7th house for partnerships and marriage.
+    - Analyze the 2nd house for wealth.
+    Mention any planets in these houses and give a simple interpretation of their effect.
+
+    ### ශක්තීන් සහ අභියෝග (Strengths and Challenges)
+    Based on the D1 chart, identify one key planetary strength (like a well-placed Jupiter or Venus) and one key challenge (like a difficult Saturn or Mars placement). Explain them simply.
+
+    ### Pro අනුවාදය (Pro Version)
+    Conclude with a short, encouraging message inviting the user to upgrade to a pro version for a more detailed analysis, including Dasha periods, Navamsa (D9) chart insights for destiny, specific remedies, and a deeper look into finance and health.
+
+    The final output must be ONLY the Sinhala reading, starting with the title '# ජන්ම පත්‍ර විග්‍රහය'. Do not add any text before or after the reading.
     """
     
     try:
