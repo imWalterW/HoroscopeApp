@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 gunicorn
-kerykeion==3.1.2
+pyswisseph
+pytz
 geopy
 supabase
