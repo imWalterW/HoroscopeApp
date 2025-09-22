@@ -34,37 +34,31 @@ def get_sign(longitude: float) -> str:
     return ZODIAC_SIGNS[int(longitude / 30)]
 
 def calculate_astro_details(date_str, time_str, lat, lon):
-    """
-    Calculates D1 and D9 charts using a robust UTC time conversion.
-    """
-    # --- ROBUST TIME CONVERSION LOGIC USING PYZ ---
+    # Create a timezone-aware UTC datetime object
     year, month, day = map(int, date_str.split('-'))
     hour, minute = map(int, time_str.split(':'))
-    
-    # Create a naive datetime object from user input
     dt_local_naive = datetime.datetime(year, month, day, hour, minute)
-    
-    # Define the specific timezone for Sri Lanka
     sri_lanka_tz = pytz.timezone("Asia/Colombo")
-    
-    # Make the datetime object timezone-aware
     dt_local_aware = sri_lanka_tz.localize(dt_local_naive)
-    
-    # Convert the timezone-aware local time to UTC
     dt_utc = dt_local_aware.astimezone(pytz.utc)
-    
-    # Calculate the Julian Day from the corrected UTC datetime
     jd_utc, _ = swe.utc_to_jd(dt_utc.year, dt_utc.month, dt_utc.day, dt_utc.hour, dt_utc.minute, dt_utc.second, 1)
-    # --- END OF CORRECTED SECTION ---
 
-    # Set Ayanamsa to Lahiri
+    # Set Ayanamsa to Lahiri for all sidereal calculations
     swe.set_sid_mode(swe.SIDM_LAHIRI)
     
-    # Calculate house cusps (for Lagna)
+    # --- THE CRUCIAL FIX FOR THE LAGNA CALCULATION ---
+    # 1. Calculate house cusps, which are Tropical by default
     houses, ascmc = swe.houses(jd_utc, lat, lon, b'P')
-    lagna_long = ascmc[0]
+    tropical_lagna_long = ascmc[0]
     
-    # Calculate D1 (Rasi) positions
+    # 2. Get the Ayanamsa (correction value) for the specific date
+    ayanamsa_value = swe.get_ayanamsa_ut(jd_utc)
+    
+    # 3. Subtract the Ayanamsa to get the correct Sidereal (Vedic) Lagna longitude
+    lagna_long = (tropical_lagna_long - ayanamsa_value + 360) % 360
+    # --- END OF FIX ---
+
+    # Calculate D1 (Rasi) positions using the sidereal flag
     d1_planets = {}
     for name, planet_id in PLANET_LIST.items():
         pos = swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0]
@@ -89,7 +83,7 @@ def calculate_astro_details(date_str, time_str, lat, lon):
     d1_data = {"lagna": get_sign(lagna_long), "planets": d1_planets}
     d9_data = {"lagna": d9_lagna_sign, "planets": d9_planets}
     
-    # Simplified Nakshatra calculation
+    # Nakshatra calculation
     moon_pos = swe.calc_ut(jd_utc, swe.MOON, swe.FLG_SIDEREAL)[0][0]
     nakshatra_num = int(moon_pos / (13 + 1/3))
     nakshatra_list = ["Ashvini", "Bharani", "Krittika", "Rohini", "Mrigashirsha", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Svati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishtha", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
@@ -102,7 +96,7 @@ def calculate_astro_details(date_str, time_str, lat, lon):
 
     return d1_data, d9_data, astro_details
 
-# --- API Endpoints (Same as before) ---
+# --- API Endpoints ---
 @app.post("/calculate_charts")
 async def calculate_charts(data: BirthData):
     try:
@@ -113,7 +107,7 @@ async def calculate_charts(data: BirthData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred during calculation: {str(e)}")
 
-# (The rest of the endpoints: generate_reading, register, login, are unchanged)
+# (The rest of the endpoints are unchanged)
 @app.post("/generate_reading")
 async def generate_reading(data: ChartData): return {"reading": "# Reading..."}
 @app.post("/register")
