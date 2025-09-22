@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+gunicorn
+kerykeion
+geopy
+supabase-py
