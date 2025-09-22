@@ -1,8 +1,7 @@
 fastapi
 uvicorn
 gunicorn
-pyswisseph
-pytz
+kerykeion==3.1.2
 geopy
 supabase
 email-validator
