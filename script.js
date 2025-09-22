@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chartsContainer = document.getElementById('charts-container');
     const reportContainer = document.getElementById('report-container');
     const messageContainer = document.getElementById('message-container');
-    
-    // Your live Render URL
+    const astroDetailsContainer = document.getElementById('astro-details-container');
+
     const API_BASE_URL = 'https://horoscopeapp.onrender.com';
     let currentChartData = null;
 
@@ -18,12 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetUI = () => {
         chartsContainer.style.display = 'none';
         reportContainer.style.display = 'none';
+        astroDetailsContainer.style.display = 'none';
         continueButton.style.display = 'none';
         verificationMessage.style.display = 'none';
         generateChartsButton.style.display = 'block';
         chartsContainer.innerHTML = '';
         reportContainer.innerHTML = '';
         messageContainer.innerHTML = '';
+        astroDetailsContainer.innerHTML = '';
     };
 
     const showLoading = (message) => {
@@ -39,6 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDiv.textContent = message;
         messageContainer.innerHTML = '';
         messageContainer.appendChild(messageDiv);
+    };
+    
+    const displayAstroDetails = (details) => {
+        astroDetailsContainer.innerHTML = '';
+        const list = document.createElement('ul');
+        for (const key in details) {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<span class="detail-key">${key}:</span> <span class="detail-value">${details[key] || 'N/A'}</span>`;
+            list.appendChild(listItem);
+        }
+        astroDetailsContainer.appendChild(list);
+        astroDetailsContainer.style.display = 'block';
     };
 
     // --- STEP 1: Generate Charts Event Listener ---
@@ -72,6 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             currentChartData = data;
 
+            displayAstroDetails(data.astro_details);
+            
             const d1ChartElement = createChart(data.d1_chart, 'ලග්න කේන්ද්‍රය (D1)');
             const d9ChartElement = createChart(data.d9_chart, 'නවාංශක කේන්ද්‍රය (D9)');
             chartsContainer.appendChild(d1ChartElement);
@@ -92,28 +108,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- STEP 2: Get Full Reading Event Listener ---
     continueButton.addEventListener('click', async () => {
         if (!currentChartData) return;
-
         showLoading('සම්පූර්ණ පලාපල විස්තරය ලබාගනිමින්...');
-        reportContainer.style.display = 'none';
-
         try {
             const response = await fetch(`${API_BASE_URL}/generate_reading`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(currentChartData),
             });
-
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.detail || 'Reading generation failed.');
             }
-
             const data = await response.json();
             displayReading(data.reading);
             reportContainer.style.display = 'block';
             continueButton.style.display = 'none';
             verificationMessage.style.display = 'none';
-
         } catch (error) {
              showMessage(`දෝෂයක් ඇතිවිය: ${error.message}`);
         } finally {
