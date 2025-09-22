@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, EmailStr
 from typing import Dict, Any
-from kerykeion import KrInstance, MakeSubject
+from kerykeion import AstrologicalSubject, Kerykeion
 from geopy.geocoders import Nominatim
 from supabase import create_client, Client
 
@@ -36,7 +36,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
-geolocator = Nominatim(user_agent="daivaya_app_v4")
+geolocator = Nominatim(user_agent="daivaya_app_v5")
 
 # --- LLM Helper Function ---
 def get_reading_from_llm(chart_data: ChartData, is_pro: bool = False) -> str:
@@ -63,7 +63,6 @@ async def register_user(credentials: UserCredentials):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
 @app.post("/login")
 async def login_user(credentials: UserCredentials):
     if not supabase: raise HTTPException(status_code=500, detail="Supabase client not initialized.")
@@ -72,7 +71,6 @@ async def login_user(credentials: UserCredentials):
         return {"message": "Login successful.", "session": session.dict()}
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid login credentials.")
-
 
 # --- Astrology Endpoints ---
 @app.post("/calculate_charts")
@@ -84,16 +82,16 @@ async def calculate_charts(data: BirthData):
         year, month, day = map(int, data.date.split('-'))
         hour, minute = map(int, data.time.split(':'))
         
-        subject = MakeSubject("User", year, month, day, hour, minute, city=data.place, lat=location.latitude, lon=location.longitude)
-        k_instance = KrInstance(subject, ayanamsa="LAHIRI")
+        subject = AstrologicalSubject("User", year, month, day, hour, minute, city=data.place, lat=location.latitude, lon=location.longitude)
+        chart = Kerykeion(subject, ayanamsa="LAHIRI")
         
         d1_chart_data = {
-            "lagna": k_instance.lagna['sign'],
-            "planets": {p['name']: p['sign'] for p in k_instance.planets}
+            "lagna": chart.get_all_houses_degrees()[0]['sign'],
+            "planets": {p['name']: p['sign'] for p in chart.get_planets_and_houses()}
         }
         d9_chart_data = {
-            "lagna": k_instance.navamsa_lagna['sign'],
-            "planets": {p['name']: p['navamsa_sign'] for p in k_instance.planets}
+            "lagna": chart.get_navamsa_lagna()['sign'],
+            "planets": {p['name']: p['navamsa_sign'] for p in chart.get_planets_and_houses()}
         }
         
         return {"d1_chart": d1_chart_data, "d9_chart": d9_chart_data}
