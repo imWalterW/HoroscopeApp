@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('message-container');
     
     // NOTE: For deployment, this will be your Render URL. For local testing, it's this:
-    const API_BASE_URL = 'https://horoscopelk.netlify.app';
+    const API_BASE_URL = 'https://horoscopeapp.onrender.com';
     let currentChartData = null; // To store chart data between steps
 
     // --- UI Helper Functions ---
@@ -149,3 +149,4 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 });
+
