@@ -3,9 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, EmailStr
 from typing import Dict, Any
-# --- UPDATED KERYKEION IMPORT ---
 from kerykeion import KrInstance, MakeSubject
-# ----------------------------------
 from geopy.geocoders import Nominatim
 from supabase import create_client, Client
 
@@ -38,7 +36,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
-geolocator = Nominatim(user_agent="daivaya_app_v3")
+geolocator = Nominatim(user_agent="daivaya_app_v4")
 
 # --- LLM Helper Function ---
 def get_reading_from_llm(chart_data: ChartData, is_pro: bool = False) -> str:
@@ -59,7 +57,6 @@ def get_reading_from_llm(chart_data: ChartData, is_pro: bool = False) -> str:
 @app.post("/register")
 async def register_user(credentials: UserCredentials):
     if not supabase: raise HTTPException(status_code=500, detail="Supabase client not initialized.")
-    # ... (rest of the function is the same)
     try:
         user = supabase.auth.sign_up({"email": credentials.email, "password": credentials.password})
         return {"message": "User registered successfully.", "user": user.user.dict()}
@@ -70,7 +67,6 @@ async def register_user(credentials: UserCredentials):
 @app.post("/login")
 async def login_user(credentials: UserCredentials):
     if not supabase: raise HTTPException(status_code=500, detail="Supabase client not initialized.")
-    # ... (rest of the function is the same)
     try:
         session = supabase.auth.sign_in_with_password({"email": credentials.email, "password": credentials.password})
         return {"message": "Login successful.", "session": session.dict()}
@@ -88,7 +84,6 @@ async def calculate_charts(data: BirthData):
         year, month, day = map(int, data.date.split('-'))
         hour, minute = map(int, data.time.split(':'))
         
-        # --- UPDATED KERYKEION LOGIC ---
         subject = MakeSubject("User", year, month, day, hour, minute, city=data.place, lat=location.latitude, lon=location.longitude)
         k_instance = KrInstance(subject, ayanamsa="LAHIRI")
         
@@ -100,7 +95,6 @@ async def calculate_charts(data: BirthData):
             "lagna": k_instance.navamsa_lagna['sign'],
             "planets": {p['name']: p['navamsa_sign'] for p in k_instance.planets}
         }
-        # ----------------------------------
         
         return {"d1_chart": d1_chart_data, "d9_chart": d9_chart_data}
     except Exception as e:
