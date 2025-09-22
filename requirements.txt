@@ -1,6 +1,8 @@
 fastapi
 uvicorn
 gunicorn
-kerykeion
+pyswisseph
+pytz
 geopy
-supabase-py
+supabase
+email-validator
