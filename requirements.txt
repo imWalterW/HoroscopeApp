@@ -6,3 +6,4 @@ pytz
 geopy
 supabase
 email-validator
+google-generativeai
