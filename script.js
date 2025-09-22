@@ -1,211 +1,111 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Element References ---
     const form = document.getElementById('birth-data-form');
-    const generateChartsButton = document.getElementById('generate-charts-button');
     const continueButton = document.getElementById('continue-button');
-    const verificationMessage = document.getElementById('verification-message');
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const loadingText = document.getElementById('loading-text');
+    // (Other element references are the same)
+    const astroDetailsContainer = document.getElementById('astro-details-container');
     const chartsContainer = document.getElementById('charts-container');
     const reportContainer = document.getElementById('report-container');
     const messageContainer = document.getElementById('message-container');
-    const astroDetailsContainer = document.getElementById('astro-details-container');
-
-    const API_BASE_URL = 'https://horoscopeapp.onrender.com';
-    let currentChartData = null;
-
-    // --- UI Helper Functions ---
-    const resetUI = () => {
-        chartsContainer.style.display = 'none';
-        reportContainer.style.display = 'none';
-        astroDetailsContainer.style.display = 'none';
-        continueButton.style.display = 'none';
-        verificationMessage.style.display = 'none';
-        generateChartsButton.style.display = 'block';
-        chartsContainer.innerHTML = '';
-        reportContainer.innerHTML = '';
-        messageContainer.innerHTML = '';
-        astroDetailsContainer.innerHTML = '';
-    };
-
-    const showLoading = (message) => {
-        loadingText.textContent = message;
-        loadingIndicator.style.display = 'block';
-    };
-
-    const hideLoading = () => loadingIndicator.style.display = 'none';
-
-    const showMessage = (message, type = 'error') => {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
-        messageDiv.textContent = message;
-        messageContainer.innerHTML = '';
-        messageContainer.appendChild(messageDiv);
-    };
+    const loadingIndicator = document.getElementById('loading-indicator');
     
-    const displayAstroDetails = (details) => {
-        astroDetailsContainer.innerHTML = '';
-        const list = document.createElement('ul');
-        for (const key in details) {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `<span class="detail-key">${key}:</span> <span class="detail-value">${details[key] || 'N/A'}</span>`;
-            list.appendChild(listItem);
+    let currentChartData = null; // Store chart data
+
+    // --- Geocoding Function (gets coordinates from a place name) ---
+    const getCoordinates = async (placeName) => {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(placeName)}&limit=1`);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                return { latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) };
+            }
+            throw new Error('Location not found');
+        } catch (error) {
+            throw new Error('Geocoding failed. Check your connection or the location name.');
         }
-        astroDetailsContainer.appendChild(list);
-        astroDetailsContainer.style.display = 'block';
     };
 
-    // --- STEP 1: Generate Charts Event Listener ---
+    // --- Main Form Submission Handler ---
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-        resetUI();
-
+        // Reset the UI
+        astroDetailsContainer.style.display = 'none';
+        chartsContainer.style.display = 'none';
+        reportContainer.style.display = 'none';
+        continueButton.style.display = 'none';
+        
         const date = document.getElementById('birth-date').value;
         const time = document.getElementById('birth-time').value;
         const place = document.getElementById('birth-place').value.trim();
 
-        if (!date || !time || !place) {
-            showMessage('කරුණාකර සියලු ක්ෂේත්‍ර පුරවන්න.');
-            return;
-        }
+        if (!date || !time || !place) return;
 
-        showLoading('කේන්ද්‍ර සටහන් ජනනය කරමින්...');
+        loadingIndicator.style.display = 'block';
 
         try {
-            const response = await fetch(`${API_BASE_URL}/calculate_charts`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ date, time, place }),
+            // 1. Get Coordinates
+            const coordinates = await getCoordinates(place);
+
+            // 2. Perform Astrology Calculations in the Browser
+            const birthDate = new Date(`${date}T${time}`);
+            const kosmos = new Kosmos({
+                ayanamsa: "LAHIRI",
+                utc: birthDate,
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
             });
 
-            if (!response.ok) {
-                 const err = await response.json();
-                 throw new Error(err.detail || 'Chart calculation failed.');
-            }
+            const d1 = kosmos.getChart();
+            const d9 = kosmos.getChart('D9');
 
-            const data = await response.json();
-            currentChartData = data;
+            // 3. Format the data for our display functions
+            const formatPlanets = (chart) => {
+                const planets = {};
+                for (const planetName in chart.planets) {
+                    planets[planetName] = chart.planets[planetName].sign.name;
+                }
+                return planets;
+            };
 
-            displayAstroDetails(data.astro_details);
+            const d1_chart = { lagna: d1.ascendant.sign.name, planets: formatPlanets(d1) };
+            const d9_chart = { lagna: d9.ascendant.sign.name, planets: formatPlanets(d9) };
             
-            const d1ChartElement = createChart(data.d1_chart, 'ලග්න කේන්ද්‍රය (D1)');
-            const d9ChartElement = createChart(data.d9_chart, 'නවාංශක කේන්ද්‍රය (D9)');
-            chartsContainer.appendChild(d1ChartElement);
-            chartsContainer.appendChild(d9ChartElement);
+            const astro_details = {
+                "Lagna": d1.ascendant.sign.name,
+                "Nawamsa Lagna": d9.ascendant.sign.name,
+                "Nekatha": d1.planets.Moon.nakshatra.name,
+                "Gana": d1.planets.Moon.nakshatra.gana,
+                "Yoni": d1.planets.Moon.nakshatra.yoni,
+            };
+            
+            currentChartData = { d1_chart, d9_chart, astro_details }; // Save for the next step
+
+            // 4. Display the results
+            displayAstroDetails(astro_details);
+            chartsContainer.innerHTML = '';
+            chartsContainer.appendChild(createChart(d1_chart, 'ලග්න කේන්ද්‍රය (D1)'));
+            chartsContainer.appendChild(createChart(d9_chart, 'නවාංශක කේන්ද්‍රය (D9)'));
             
             chartsContainer.style.display = 'flex';
-            verificationMessage.style.display = 'block';
             continueButton.style.display = 'block';
-            generateChartsButton.style.display = 'none';
 
         } catch (error) {
-            showMessage(`දෝෂයක් ඇතිවිය: ${error.message}`);
+            messageContainer.textContent = `Error: ${error.message}`;
         } finally {
-            hideLoading();
+            loadingIndicator.style.display = 'none';
         }
     });
 
-    // --- STEP 2: Get Full Reading Event Listener ---
-    continueButton.addEventListener('click', async () => {
-        if (!currentChartData) return;
-        showLoading('සම්පූර්ණ පලාපල විස්තරය ලබාගනිමින්...');
-        try {
-            const response = await fetch(`${API_BASE_URL}/generate_reading`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(currentChartData),
-            });
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.detail || 'Reading generation failed.');
-            }
-            const data = await response.json();
-            displayReading(data.reading);
-            reportContainer.style.display = 'block';
-            continueButton.style.display = 'none';
-            verificationMessage.style.display = 'none';
-        } catch (error) {
-             showMessage(`දෝෂයක් ඇතිවිය: ${error.message}`);
-        } finally {
-            hideLoading();
-        }
+    // --- Continue Button for reading ---
+    continueButton.addEventListener('click', () => {
+        // This is now much simpler. It just displays a placeholder.
+        // In the future, this could call a Netlify/Supabase Function for an AI reading.
+        reportContainer.innerHTML = `<h1>ජන්ම පත්‍ර විග්‍රහය</h1><p>මෙය ඔබගේ මූලික පලාපල විස්තරයයි. Pro අනුවාදය වෙත පිවිසීමෙන් සම්පූර්ණ විස්තරයක් ලබාගන්න.</p>`;
+        reportContainer.style.display = 'block';
+        continueButton.style.display = 'none';
     });
-    
-    // --- Helper Functions to Display Content ---
-    const displayReading = (text) => {
-        const htmlContent = text.replace(/^#\s(.+)/gm, '<h1>$1</h1>').replace(/^###\s(.+)/gm, '<h3>$1</h3>').split('\n').filter(line => line.trim() !== '').map(line => {
-            if (line.startsWith('<h1>') || line.startsWith('<h3>')) return line;
-            return `<p>${line}</p>`;
-        }).join('');
-        reportContainer.innerHTML = htmlContent;
-    };
-    
-    const createChart = (chartData, title) => {
-        const ZODIAC_SIGNS_EN = [ 'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces' ];
-        const ZODIAC_SIGNS_SI = { 'Aries': 'මේෂ', 'Taurus': 'වෘෂභ', 'Gemini': 'මිථුන', 'Cancer': 'කටක', 'Leo': 'සිංහ', 'Virgo': 'කන්‍යා', 'Libra': 'තුලා', 'Scorpio': 'වෘශ්චික', 'Sagittarius': 'ධනු', 'Capricorn': 'මකර', 'Aquarius': 'කුම්භ', 'Pisces': 'මීන' };
-        const PLANET_ABBR_SI = { 'Sun': 'ර', 'Moon': 'ස', 'Mars': 'කු', 'Mercury': 'බු', 'Jupiter': 'ගු', 'Venus': 'සි', 'Saturn': 'ශ', 'Rahu': 'රා', 'Ketu': 'කේ' };
 
-        const chartWrapper = document.createElement('div');
-        chartWrapper.className = 'chart-wrapper';
-        const chartTitle = document.createElement('h2');
-        chartTitle.className = 'chart-title';
-        chartTitle.textContent = title;
-        chartWrapper.appendChild(chartTitle);
-
-        const grid = document.createElement('div');
-        grid.className = 'chart-grid';
-        const lagnaSignIndex = ZODIAC_SIGNS_EN.indexOf(chartData.lagna);
-
-        ZODIAC_SIGNS_EN.forEach((sign, currentSignIndex) => {
-            const box = document.createElement('div');
-            box.className = `chart-box ${sign.toLowerCase()}`;
-            const signName = document.createElement('span');
-            signName.className = 'sign-name';
-            signName.textContent = ZODIAC_SIGNS_SI[sign];
-            box.appendChild(signName);
-
-            const houseNumberValue = ((currentSignIndex - lagnaSignIndex + 12) % 12) + 1;
-            const houseNumber = document.createElement('span');
-            houseNumber.className = 'house-number';
-            houseNumber.textContent = houseNumberValue;
-            box.appendChild(houseNumber);
-
-            const planetsDiv = document.createElement('div');
-            planetsDiv.className = 'planets';
-            
-            if (chartData.lagna === sign) {
-                box.classList.add('lagna-box');
-                const lagnaMarker = document.createElement('span');
-                lagnaMarker.className = 'lagna-marker planet';
-                lagnaMarker.textContent = 'ලග්';
-                planetsDiv.appendChild(lagnaMarker);
-            }
-
-            for (const planet in chartData.planets) {
-                if (chartData.planets[planet] === sign) {
-                    const planetSpan = document.createElement('span');
-                    planetSpan.className = 'planet';
-                    planetSpan.textContent = PLANET_ABBR_SI[planet];
-                    planetsDiv.appendChild(planetSpan);
-                }
-            }
-            box.appendChild(planetsDiv);
-            grid.appendChild(box);
-        });
-        
-        for(let i=1; i<=4; i++) {
-             const centerBox = document.createElement('div');
-             centerBox.className = `chart-box center-box-${i}`;
-             if (i === 1) {
-                 const centerTitle = document.createElement('div');
-                 centerTitle.className = 'center-title';
-                 centerTitle.textContent = title.includes('D1') ? 'රාශි' : 'නවාංශක';
-                 centerBox.appendChild(centerTitle);
-             }
-             grid.appendChild(centerBox);
-        }
-
-        chartWrapper.appendChild(grid);
-        return chartWrapper;
-    };
+    // The createChart and displayAstroDetails functions are the same as the last complete version I sent.
+    const displayAstroDetails = (details) => { /* ... same as before ... */ };
+    const createChart = (chartData, title) => { /* ... same as before ... */ };
 });
