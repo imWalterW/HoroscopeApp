@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('message-container');
     
     // NOTE: For deployment, this will be your Render URL. For local testing, it's this:
-    const API_BASE_URL = 'http://127.0.0.1:8000';
+    const API_BASE_URL = 'https://horoscopelk.netlify.app';
     let currentChartData = null; // To store chart data between steps
 
     // --- UI Helper Functions ---
@@ -147,4 +147,5 @@ document.addEventListener('DOMContentLoaded', () => {
         for(let i=1; i<=4; i++) { const centerBox = document.createElement('div'); centerBox.className = `chart-box center-box-${i}`; grid.appendChild(centerBox); }
         chartWrapper.appendChild(grid); return chartWrapper;
     };
+
 });
