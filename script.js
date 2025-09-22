@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('message-container');
     const astroDetailsContainer = document.getElementById('astro-details-container');
 
-    // THIS IS THE LINE YOU MUST UPDATE
-    const API_BASE_URL = 'https://horoscopeapp.onrender.com'; // Replace with your live Render URL
+    // IMPORTANT: UPDATE THIS WITH YOUR RENDER URL
+    const API_BASE_URL = 'https://horoscopeapp.onrender.com'; 
     let currentChartData = null;
 
     // --- UI Helper Functions ---
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const list = document.createElement('ul');
         for (const key in details) {
             const listItem = document.createElement('li');
-            listItem.innerHTML = `<span class="detail-key">${key}:</span> <span class="detail-value">${details[key] || 'N/A'}</span>`;
+            listItem.innerHTML = `<span class="detail-key">${key}:</span> <span class="detail-value">${details[key] || '-'}</span>`;
             list.appendChild(listItem);
         }
         astroDetailsContainer.appendChild(list);
@@ -135,15 +135,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const ZODIAC_SIGNS_EN = [ 'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces' ];
         const ZODIAC_SIGNS_SI = { 'Aries': 'මේෂ', 'Taurus': 'වෘෂභ', 'Gemini': 'මිථුන', 'Cancer': 'කටක', 'Leo': 'සිංහ', 'Virgo': 'කන්‍යා', 'Libra': 'තුලා', 'Scorpio': 'වෘශ්චික', 'Sagittarius': 'ධනු', 'Capricorn': 'මකර', 'Aquarius': 'කුම්භ', 'Pisces': 'මීන' };
         const PLANET_ABBR_SI = { 'Sun': 'ර', 'Moon': 'ස', 'Mars': 'කු', 'Mercury': 'බු', 'Jupiter': 'ගු', 'Venus': 'සි', 'Saturn': 'ශ', 'Rahu': 'රා', 'Ketu': 'කේ' };
+        
         const chartWrapper = document.createElement('div');
         chartWrapper.className = 'chart-wrapper';
         const chartTitle = document.createElement('h2');
         chartTitle.className = 'chart-title';
         chartTitle.textContent = title;
         chartWrapper.appendChild(chartTitle);
+
         const grid = document.createElement('div');
         grid.className = 'chart-grid';
         const lagnaSignIndex = ZODIAC_SIGNS_EN.indexOf(chartData.lagna);
+
+        const centerBox = document.createElement('div');
+        centerBox.className = 'center-box';
+        const lagnaNameInSinhala = ZODIAC_SIGNS_SI[chartData.lagna];
+        centerBox.innerHTML = `<span class="center-title">${lagnaNameInSinhala}</span><span class="center-subtitle">${title.includes('D1') ? 'ලග්නය' : 'නවාංශකය'}</span>`;
+        grid.appendChild(centerBox);
+
         ZODIAC_SIGNS_EN.forEach((sign, currentSignIndex) => {
             const box = document.createElement('div');
             box.className = `chart-box ${sign.toLowerCase()}`;
@@ -176,17 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
             box.appendChild(planetsDiv);
             grid.appendChild(box);
         });
-        for(let i=1; i<=4; i++) {
-             const centerBox = document.createElement('div');
-             centerBox.className = `chart-box center-box-${i}`;
-             if (i === 1) {
-                 const centerTitle = document.createElement('div');
-                 centerTitle.className = 'center-title';
-                 centerTitle.textContent = title.includes('D1') ? 'රාශි' : 'නවාංශක';
-                 centerBox.appendChild(centerTitle);
-             }
-             grid.appendChild(centerBox);
-        }
+        
         chartWrapper.appendChild(grid);
         return chartWrapper;
     };
