@@ -5,3 +5,4 @@ pyswisseph
 pytz
 geopy
 supabase
+email-validator
