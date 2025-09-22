@@ -25,13 +25,16 @@ class BirthData(BaseModel): date: str; time: str; place: str
 class ChartData(BaseModel): d1_chart: Dict[str, Any]; d9_chart: Dict[str, Any]
 class UserCredentials(BaseModel): email: EmailStr; password: str = Field(..., min_length=6)
 
-# --- CORRECTED ASTROLOGY CALCULATION LOGIC ---
-ZODIAC_SIGNS = [ "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces" ]
+# --- Sinhala Translation Maps ---
+ZODIAC_SIGNS_SI = { "Aries": "මේෂ", "Taurus": "වෘෂභ", "Gemini": "මිථුන", "Cancer": "කටක", "Leo": "සිංහ", "Virgo": "කන්‍යා", "Libra": "තුලා", "Scorpio": "වෘශ්චික", "Sagittarius": "ධනු", "Capricorn": "මකර", "Aquarius": "කුම්භ", "Pisces": "මීන" }
+NAKSHATRA_SI = ["අස්විද", "බෙරණ", "කැති", "රෙහෙණ", "මුලසිර", "අද", "පුනාවස", "පුෂ", "අස්ලිය", "මා", "පුවපල්", "උත්‍රපල්", "හත", "සිත", "සා", "විසා", "අනුර", "දෙට", "මුල", "පුවසල", "උත්‍රසල", "සුවණ", "දෙනට", "සියාවස", "පුවපුටුප", "උත්‍රපුටුප", "රේවතී"]
+
+# --- WORKING ASTROLOGY CALCULATION LOGIC ---
+ZODIAC_SIGNS_EN = [ "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces" ]
 PLANET_LIST = { 'Sun': swe.SUN, 'Moon': swe.MOON, 'Mars': swe.MARS, 'Mercury': swe.MERCURY, 'Jupiter': swe.JUPITER, 'Venus': swe.VENUS, 'Saturn': swe.SATURN, 'Rahu': swe.MEAN_NODE }
 
 def get_sign(longitude: float) -> str:
-    """Converts a longitudinal degree to a Zodiac sign."""
-    return ZODIAC_SIGNS[int(longitude / 30)]
+    return ZODIAC_SIGNS_EN[int(longitude / 30)]
 
 def calculate_astro_details(date_str, time_str, lat, lon):
     # Create a timezone-aware UTC datetime object
@@ -43,55 +46,36 @@ def calculate_astro_details(date_str, time_str, lat, lon):
     dt_utc = dt_local_aware.astimezone(pytz.utc)
     jd_utc, _ = swe.utc_to_jd(dt_utc.year, dt_utc.month, dt_utc.day, dt_utc.hour, dt_utc.minute, dt_utc.second, 1)
 
-    # Set Ayanamsa to Lahiri for all sidereal calculations
+    # Set Ayanamsa to Lahiri
     swe.set_sid_mode(swe.SIDM_LAHIRI)
     
-    # --- THE CRUCIAL FIX FOR THE LAGNA CALCULATION ---
-    # 1. Calculate house cusps, which are Tropical by default
+    # Correctly calculate the Sidereal Lagna
     houses, ascmc = swe.houses(jd_utc, lat, lon, b'P')
     tropical_lagna_long = ascmc[0]
-    
-    # 2. Get the Ayanamsa (correction value) for the specific date
     ayanamsa_value = swe.get_ayanamsa_ut(jd_utc)
-    
-    # 3. Subtract the Ayanamsa to get the correct Sidereal (Vedic) Lagna longitude
     lagna_long = (tropical_lagna_long - ayanamsa_value + 360) % 360
-    # --- END OF FIX ---
-
-    # Calculate D1 (Rasi) positions using the sidereal flag
-    d1_planets = {}
-    for name, planet_id in PLANET_LIST.items():
-        pos = swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0]
-        d1_planets[name] = get_sign(pos[0])
     
+    # Calculate D1 (Rasi) positions
+    d1_planets = {name: get_sign(swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0]) for name, planet_id in PLANET_LIST.items()}
     rahu_long = swe.calc_ut(jd_utc, swe.MEAN_NODE, swe.FLG_SIDEREAL)[0][0]
-    ketu_long = (rahu_long + 180) % 360
-    d1_planets['Ketu'] = get_sign(ketu_long)
-
+    d1_planets['Ketu'] = get_sign((rahu_long + 180) % 360)
+    
     # Calculate D9 (Navamsa) positions
-    d9_planets = {}
-    navamsa_lagna_long = (lagna_long * 9) % 360
-    d9_lagna_sign = get_sign(navamsa_lagna_long)
+    d9_planets = {name: get_sign((swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0] * 9) % 360) for name, planet_id in PLANET_LIST.items()}
+    d9_planets['Ketu'] = get_sign(((rahu_long + 180) % 360 * 9) % 360)
     
-    for name, planet_id in PLANET_LIST.items():
-        pos_long = swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0]
-        navamsa_long = (pos_long * 9) % 360
-        d9_planets[name] = get_sign(navamsa_long)
-    
-    d9_planets['Ketu'] = get_sign((ketu_long * 9) % 360)
-
     d1_data = {"lagna": get_sign(lagna_long), "planets": d1_planets}
-    d9_data = {"lagna": d9_lagna_sign, "planets": d9_planets}
+    d9_data = {"lagna": get_sign((lagna_long * 9) % 360), "planets": d9_planets}
     
     # Nakshatra calculation
     moon_pos = swe.calc_ut(jd_utc, swe.MOON, swe.FLG_SIDEREAL)[0][0]
     nakshatra_num = int(moon_pos / (13 + 1/3))
-    nakshatra_list = ["Ashvini", "Bharani", "Krittika", "Rohini", "Mrigashirsha", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Svati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishtha", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
-
+    
+    # Final details dictionary with Sinhala translations
     astro_details = {
-        "Lagna": d1_data["lagna"],
-        "Nawamsa Lagna": d9_data["lagna"],
-        "Nekatha": nakshatra_list[nakshatra_num] if 0 <= nakshatra_num < 27 else "Unknown",
+        "ලග්නය": ZODIAC_SIGNS_SI.get(d1_data["lagna"], d1_data["lagna"]),
+        "නවාංශක ලග්නය": ZODIAC_SIGNS_SI.get(d9_data["lagna"], d9_data["lagna"]),
+        "නැකත": NAKSHATRA_SI[nakshatra_num] if 0 <= nakshatra_num < 27 else "-",
     }
 
     return d1_data, d9_data, astro_details
@@ -107,10 +91,11 @@ async def calculate_charts(data: BirthData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred during calculation: {str(e)}")
 
-# (The rest of the endpoints are unchanged)
+# (Other endpoints are included for future use)
 @app.post("/generate_reading")
 async def generate_reading(data: ChartData): return {"reading": "# Reading..."}
 @app.post("/register")
 async def register_user(credentials: UserCredentials): return {"message": "User registered."}
 @app.post("/login")
 async def login_user(credentials: UserCredentials): return {"message": "Login successful."}
+
