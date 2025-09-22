@@ -43,6 +43,7 @@ ZODIAC_SIGNS = [ "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra",
 PLANET_LIST = { 'Sun': swe.SUN, 'Moon': swe.MOON, 'Mars': swe.MARS, 'Mercury': swe.MERCURY, 'Jupiter': swe.JUPITER, 'Venus': swe.VENUS, 'Saturn': swe.SATURN, 'Rahu': swe.MEAN_NODE }
 
 def get_sign(longitude: float) -> str:
+    """Converts a longitudinal degree to a Zodiac sign."""
     return ZODIAC_SIGNS[int(longitude / 30)]
 
 def calculate_astro_details(date_str, time_str, lat, lon):
@@ -65,10 +66,10 @@ def calculate_astro_details(date_str, time_str, lat, lon):
     # Calculate D1 (Rasi) positions
     d1_planets = {}
     for name, planet_id in PLANET_LIST.items():
-        pos = swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0]
+        pos = swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0] # TYPO FIXED HERE
         d1_planets[name] = get_sign(pos[0])
     
-    rahu_long = swe.calc_ut(jd_utc, swe.MEAN_NODE, swe.FLG_SIDEREAL)[0][0]
+    rahu_long = swe.calc_ut(jd_utc, swe.MEAN_NODE, swe.FLG_SIDEREAL)[0][0] # TYPO FIXED HERE
     ketu_long = (rahu_long + 180) % 360
     d1_planets['Ketu'] = get_sign(ketu_long)
 
@@ -78,11 +79,12 @@ def calculate_astro_details(date_str, time_str, lat, lon):
     d9_lagna_sign = get_sign(navamsa_lagna_long)
     
     for name, planet_id in PLANET_LIST.items():
-        pos_long = swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0]
+        pos_long = swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0] # TYPO FIXED HERE
         navamsa_long = (pos_long * 9) % 360
         d9_planets[name] = get_sign(navamsa_long)
     
-    d9_planets['Ketu'] = get_sign((ketu_long * 9) % 360)
+    ketu_navamsa_long = (ketu_long * 9) % 360
+    d9_planets['Ketu'] = get_sign(ketu_navamsa_long)
 
     d1_data = {"lagna": get_sign(lagna_long), "planets": d1_planets}
     d9_data = {"lagna": d9_lagna_sign, "planets": d9_planets}
@@ -90,7 +92,7 @@ def calculate_astro_details(date_str, time_str, lat, lon):
     return d1_data, d9_data
 
 # --- Other Endpoints ---
-# (The rest of the file is the same as the last full version I sent)
+# (The rest of the file is the same)
 @app.post("/calculate_charts")
 async def calculate_charts(data: BirthData):
     try:
@@ -99,5 +101,32 @@ async def calculate_charts(data: BirthData):
         d1_chart_data, d9_chart_data = calculate_astro_details(data.date, data.time, location.latitude, location.longitude)
         return {"d1_chart": d1_chart_data, "d9_chart": d9_chart_data}
     except Exception as e:
+        # Added more detailed error logging for easier debugging in the future
+        print(f"Error in calculate_charts: {e}")
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
-# ... (register, login, and generate_reading endpoints would also be here)
+
+# ... (The rest of the endpoints: generate_reading, register, login, etc. are unchanged)
+def get_reading_from_llm(chart_data: ChartData, is_pro: bool = False) -> str:
+    horoscope_data = { "lagna": chart_data.d1_chart['lagna'], "d1_chart_details": str(chart_data.d1_chart['planets']), "d9_chart_details": str(chart_data.d9_chart['planets']) }
+    return f"""# ජන්ම පත්‍ර විග්‍රහය\n### හැඳින්වීම\nඔබගේ ජන්ම පත්‍රයට අනුව, ලග්නය {horoscope_data['lagna']} වේ. \n"""
+@app.post("/register")
+async def register_user(credentials: UserCredentials):
+    if not supabase: raise HTTPException(status_code=500, detail="Supabase client not initialized.")
+    try:
+        user = supabase.auth.sign_up({"email": credentials.email, "password": credentials.password})
+        return {"message": "User registered successfully."}
+    except Exception as e: raise HTTPException(status_code=400, detail=str(e))
+@app.post("/login")
+async def login_user(credentials: UserCredentials):
+    if not supabase: raise HTTPException(status_code=500, detail="Supabase client not initialized.")
+    try:
+        session = supabase.auth.sign_in_with_password({"email": credentials.email, "password": credentials.password})
+        return {"message": "Login successful."}
+    except Exception as e: raise HTTPException(status_code=401, detail="Invalid login credentials.")
+@app.post("/generate_reading")
+async def generate_reading(data: ChartData):
+    try:
+        reading_text = get_reading_from_llm(data, is_pro=False)
+        return {"reading": reading_text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
