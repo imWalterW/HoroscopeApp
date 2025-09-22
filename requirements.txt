@@ -1,6 +1,6 @@
 fastapi
 uvicorn
 gunicorn
-kerykeion==4.26.3
+kerykeion==3.1.2
 geopy
 supabase
