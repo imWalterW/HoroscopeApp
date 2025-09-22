@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-gunicorn
-kerykeion==3.1.2
-geopy
-supabase
-email-validator
-pytz
