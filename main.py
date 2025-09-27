@@ -12,8 +12,6 @@ import json
 import google.generativeai as genai
 from supabase import create_client, Client
 
-# --- Load Environment Variables ---
-load_dotenv()
 
 # --- App Initialization ---
 app = FastAPI()
@@ -207,7 +205,7 @@ async def generate_reading_endpoint(chart_data: Dict[str, Any], authorization: s
 
         if not GEMINI_API_KEY:
             raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured.")
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
         prompt_data = chart_data.get("prompt_data", {})
         prompt = f"""
         You are 'Daivaya Guru', an expert Vedic Astrologer from Sri Lanka. Your tone must be wise, formal, respectful, and deeply insightful, like a personal consultation. The entire response must be in the SINHALA language. Your goal is to provide a comprehensive, positive, and empowering horoscope reading ('ජන්ම පත්‍ර විග්‍රහය') that leaves the user feeling understood, optimistic, and 100% satisfied.
@@ -275,7 +273,6 @@ async def generate_reading_endpoint(chart_data: Dict[str, Any], authorization: s
         if "Invalid JWT" in str(e): raise HTTPException(status_code=401, detail="Invalid session.")
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
-# --- NEW: Porondam Endpoints ---
 @app.post("/calculate_porondam_charts")
 async def calculate_porondam_charts_endpoint(data: PorondamRequest):
     """ FREE endpoint to calculate and return chart data for two people for verification. """
@@ -290,18 +287,13 @@ async def calculate_porondam_charts_endpoint(data: PorondamRequest):
         if not location2: raise HTTPException(status_code=400, detail=f"Could not find location for Person 2: {data.person2.place}")
         d1_p2, d9_p2, prompt_p2, _ = calculate_astro_details(data.person2.date, data.person2.time, location2.latitude, location2.longitude)
         
-        # Combine the data needed for the final prompt
-        porondam_prompt_data = {
-            "person1": prompt_p1,
-            "person2": prompt_p2
-        }
+        porondam_prompt_data = { "person1": prompt_p1, "person2": prompt_p2 }
 
         return {
             "person1_charts": {"d1": d1_p1, "d9": d9_p1},
             "person2_charts": {"d1": d1_p2, "d9": d9_p2},
             "prompt_data": porondam_prompt_data
         }
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred during chart calculation: {str(e)}")
 
@@ -331,7 +323,7 @@ async def generate_porondam_reading_endpoint(chart_data: Dict[str, Any], authori
         if not GEMINI_API_KEY:
             raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured.")
         
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
         
         prompt_p1 = chart_data.get("prompt_data", {}).get("person1", {})
         prompt_p2 = chart_data.get("prompt_data", {}).get("person2", {})
@@ -359,6 +351,7 @@ async def generate_porondam_reading_endpoint(chart_data: Dict[str, Any], authori
         
         ai_response = model.generate_content(prompt)
         
+        # Deduct credits ONLY AFTER successful AI generation
         if not is_vip:
             new_credits = user_credits - PORONDAM_COST
             supabase.table('profiles').update({'credits': new_credits}).eq('id', user_id).execute()
@@ -378,5 +371,4 @@ async def generate_porondam_reading_endpoint(chart_data: Dict[str, Any], authori
         import traceback
         print(traceback.format_exc())
         if "Invalid JWT" in str(e): raise HTTPException(status_code=401, detail="Invalid session.")
-
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
