@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ගිණුම (Account) - දෛවය</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="account.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="sticky-header">
+        <div class="header-content">
+            <div class="header-left">
+                <button id="menu-toggle" class="menu-toggle-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="logo"><a href="../index.html" class="logo-link">දෛවය</a></div> </div>
+            <nav class="header-nav" id="auth-buttons">
+                <button id="login-btn" class="header-button">Login</button>
+                <button id="signup-btn" class="header-button">Sign Up</button>
+            </nav>
+            <div class="header-nav" id="user-display" style="display: none;">
+                <span id="user-identifier-header"></span>
+                <button id="logout-btn-header" class="header-button">Logout</button>
+            </div>
+        </div>
+    </header>
+<nav id="offcanvas-menu" class="offcanvas-menu">
+        <ul>
+            <li><a href="../index.html">මුල් පිටුව</a></li>
+            <li><a href="../porondam/porondam.html">පොරොන්දම්</a></li>
+            <li><a href="../combined-reading/coming-soon.html">ඒකාබද්ධ පලාපල</a></li>
+            <li><a href="../account/account.html">මගේ ගිණුම</a></li>
+            <li><a href="#">අප ගැන</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="main-title-section">
+            <h1 class="page-title">My Account</h1>
+        </div>
+
+        <section class="account-status-section report-card">
+            <h3>Your Status</h3>
+            <div class="status-details">
+                <p>Email: <strong id="user-email-display">-</strong></p>
+                <p>Current Balance: <strong id="credit-balance-display">--</strong> Credits</p>
+            </div>
+        </section>
+
+        <section class="pricing-section">
+            <div class="main-title-section">
+                <h2 class="page-title">Purchase Options</h2>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Basic Reading</h3>
+                    <p class="price">100 <span>Credits</span></p>
+                    <p class="description">Perfect for a single detailed horoscope reading.</p>
+                    <button class="submit-btn">Purchase</button>
+                </div>
+                <div class="pricing-card">
+                    <h3>Value Pack</h3>
+                    <p class="price">500 <span>Credits</span></p>
+                    <p class="description">Get 5 full readings and save. Ideal for family and friends.</p>
+                    <button class="submit-btn">Purchase</button>
+                </div>
+                <div class="pricing-card vip-card">
+                    <h3>VIP Plan</h3>
+                    <p class="price">Unlimited <span>Access</span></p>
+                    <p class="description">Generate unlimited readings and PDFs. The ultimate experience.</p>
+                    <button class="submit-btn">Subscribe</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>© 2025 දෛවය</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="account.js"></script>
+
+</body>
+</html>

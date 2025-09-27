@@ -1,0 +1,27 @@
+/* --- Styles for Coming Soon Page --- */
+
+.coming-soon-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 60vh; /* Ensures it takes up a good portion of the screen */
+}
+
+.coming-soon-container .subtitle {
+    font-size: 1.5rem;
+    color: var(--primary-gold);
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+}
+
+.coming-soon-container p {
+    max-width: 500px;
+    color: var(--text-medium);
+    margin-bottom: 2rem;
+}
+
+.home-btn {
+    max-width: 250px; /* Makes the button a bit smaller */
+}

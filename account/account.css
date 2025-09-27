@@ -1,0 +1,86 @@
+/* --- Styles for Account Page --- */
+
+/* General Page Layout */
+.page-title {
+    font-size: clamp(2rem, 6vw, 2.5rem);
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+
+/* Account Status Section */
+.account-status-section {
+    margin-bottom: 40px;
+}
+
+.status-details p {
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+    color: var(--text-light);
+}
+
+.status-details strong {
+    color: var(--primary-gold);
+    font-weight: 600;
+}
+
+/* Pricing Section Layout */
+.pricing-section {
+    padding: 20px 0;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Individual Pricing Card Styles */
+.pricing-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.pricing-card h3 {
+    color: var(--primary-gold);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.pricing-card .price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.pricing-card .price span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-medium);
+}
+
+.pricing-card .description {
+    color: var(--text-medium);
+    margin-bottom: 2rem;
+    flex-grow: 1; /* Pushes the button to the bottom */
+}
+
+/* Highlight for the VIP Card */
+.vip-card {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 20px var(--primary-gold-dim);
+}

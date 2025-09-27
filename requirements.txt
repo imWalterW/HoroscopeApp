@@ -4,6 +4,6 @@ gunicorn
 pyswisseph
 pytz
 geopy
-supabase
+supabase-py
 email-validator
 google-generativeai
