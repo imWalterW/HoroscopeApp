@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, List
 from geopy.geocoders import Nominatim
-from dotenv import load_dotenv
 from datetime import timedelta
 import json
 import google.generativeai as genai
@@ -379,4 +378,5 @@ async def generate_porondam_reading_endpoint(chart_data: Dict[str, Any], authori
         import traceback
         print(traceback.format_exc())
         if "Invalid JWT" in str(e): raise HTTPException(status_code=401, detail="Invalid session.")
+
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
