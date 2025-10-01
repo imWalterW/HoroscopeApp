@@ -10,7 +10,7 @@ workers = (multiprocessing.cpu_count() * 2) + 1
 worker_class = "uvicorn.workers.UvicornWorker"
 
 # Set a long timeout to allow for Gemini API calls
-timeout = 120
+timeout = 180
 
 # Logging
 accesslog = "-"
