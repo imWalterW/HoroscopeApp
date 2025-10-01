@@ -18,6 +18,8 @@ from supabase import create_client, Client
 app = FastAPI()
 # List of allowed origins
 origins = [
+    "https://www.daivaya.lk", # Your new custom domain (www)
+    "https://daivaya.lk",      # Your new custom domain (non-www)
     "https://horoscopesl.netlify.app",  # Your LIVE frontend URL
     "http://localhost",
     "http://127.0.0.1",
