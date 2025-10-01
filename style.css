@@ -475,21 +475,36 @@ body {
 
 /* Add these styles to your style.css file */
 
+/* In style.css */
+
 #user-identifier-header {
     color: var(--text-light);
     margin-right: 0.5rem;
-
-    /* --- New styles for mobile optimization --- */
-    white-space: nowrap;      /* Prevents the text from wrapping to a new line */
-    overflow: hidden;         /* Hides any text that overflows the element's box */
-    text-overflow: ellipsis;  /* Adds the "..." to the end of the hidden text */
-    max-width: 150px;         /* Crucial: Sets a max width to trigger the overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    
+    /* --- NEW FIXES --- */
+    /* These flex properties ensure the email shrinks gracefully */
+    flex-shrink: 1;
+    min-width: 0; 
 }
 
-/* Adjust the max-width on very small screens if needed */
-@media (max-width: 380px) {
+/* Media query for fine-tuning the header on small mobile screens */
+@media (max-width: 420px) {
     #user-identifier-header {
-        max-width: 100px; /* Even smaller max-width for very narrow devices */
+        /* Allow the email to be even shorter on small phones */
+        max-width: 90px; 
+    }
+    .logo {
+        /* Make the logo slightly smaller */
+        font-size: 1.5rem; 
+    }
+    #logout-btn-header {
+        /* Make the logout button slightly smaller */
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
     }
 }
 
