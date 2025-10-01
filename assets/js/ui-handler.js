@@ -14,6 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const userIdentifierHeader = document.getElementById('user-identifier-header');
     const logoutBtnHeader = document.getElementById('logout-btn-header');
 
+    // This URL will be the one Render gives you for your backend Web Service
+    const LIVE_API_URL = 'https://horoscopeapp.onrender.com'; // <-- IMPORTANT: Use a name for your app!
+
+    const API_BASE_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000'
+    : LIVE_API_URL;
+
     // --- Event Listeners ---
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {

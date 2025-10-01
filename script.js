@@ -49,7 +49,12 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     // --- State Management ---
     let currentChartData = null;
     // --- Dynamic API URL ---
-    const API_BASE_URL = 'http://127.0.0.1:8000';
+    // This URL will be the one Render gives you for your backend Web Service
+    const LIVE_API_URL = 'https://horoscopeapp.onrender.com'; // <-- IMPORTANT: Use a name for your app!
+
+    const API_BASE_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000'
+    : LIVE_API_URL;
 
 
     // --- UI Helper Functions ---

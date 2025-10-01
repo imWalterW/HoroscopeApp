@@ -16,9 +16,20 @@ from supabase import create_client, Client
 
 # --- App Initialization ---
 app = FastAPI()
+# List of allowed origins
+origins = [
+    "https://https://horoscopeapp.netlify.com",  # Your LIVE frontend URL
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://127.0.0.1:5500" # A common port for local live servers, add others if you use them
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
+    allow_origins=origins, # Use the new list here
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 geolocator = Nominatim(user_agent="daivaya_app_stable")
 
