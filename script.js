@@ -309,7 +309,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
              showMessage(`දෝෂයක් ඇතිවිය: ${error.message}`);
         } finally {
             continueButton.disabled = false;
-            continueButton.textContent = "සටහන් නිවැරදියි - ಪලාපල විස්තරය ලබාගන්න";
+            continueButton.textContent = "සටහන් නිවැරදියි - පලාපල විස්තරය ලබාගන්න";
         }
     });
 
