@@ -18,7 +18,7 @@ from supabase import create_client, Client
 app = FastAPI()
 # List of allowed origins
 origins = [
-    "https://https://horoscopeapp.netlify.com",  # Your LIVE frontend URL
+    "https://horoscopeapp.netlify.com",  # Your LIVE frontend URL
     "http://localhost",
     "http://127.0.0.1",
     "http://127.0.0.1:5500" # A common port for local live servers, add others if you use them
