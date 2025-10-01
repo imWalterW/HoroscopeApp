@@ -1,61 +1,666 @@
-/* Global Styles */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Noto Sans Sinhala', sans-serif; background-color: #1c1c2e; color: #e6e6e6; line-height: 1.6; min-height: 100vh; }
-.container { max-width: 800px; margin: 0 auto; padding: 20px; }
+/* ---
+Modern UI Refresh for Daivaya Horoscope App
+--- */
+
+/* Global Styles & Variables */
+:root {
+    --bg-dark: #121212;
+    --bg-surface: #1e1e1e;
+    --bg-surface-accent: #2a2a2e;
+    --primary-gold: #FFD700;
+    --primary-gold-dim: rgba(255, 215, 0, 0.1);
+    --text-light: #e0e0e0;
+    --text-medium: #a0a0a0;
+    --text-dark: #121212;
+    --border-color: #333333;
+    --success-green: #00b09b;
+    --error-red: #ff5252;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans Sinhala', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    flex: 1;
+}
 
 /* Header Styles */
-.header { text-align: center; margin-bottom: 20px; padding-top: 20px; }
-.app-title { font-size: 3.5rem; font-weight: 700; color: #FFD700; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
-.subtitle { font-size: 1.2rem; color: #b8b8b8; font-weight: 300; }
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 20px;
+}
+
+.app-title {
+    font-size: clamp(2.5rem, 8vw, 4rem); /* Responsive font size */
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.subtitle {
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    color: var(--text-medium);
+    font-weight: 300;
+}
 
 /* Form Section */
-.form-section { background: linear-gradient(135deg, #2a2a3e 0%, #1e1e30 100%); border-radius: 15px; padding: 40px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid #3a3a4e; }
-.input-group { margin-bottom: 25px; }
-.input-group label { display: block; margin-bottom: 8px; color: #e6e6e6; font-weight: 500; font-size: 1.1rem; }
-.input-group input { width: 100%; padding: 15px; border: 2px solid #3a3a4e; border-radius: 8px; background-color: #2a2a3e; color: #e6e6e6; font-size: 1rem; font-family: 'Noto Sans Sinhala', sans-serif; transition: all 0.3s ease; }
-.input-group input:focus { outline: none; border-color: #FFD700; box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1); background-color: #323248; }
+.form-section {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-surface-accent);
+    color: var(--text-light);
+    font-size: 1rem;
+    font-family: 'Noto Sans Sinhala', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.input-group select {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-surface-accent);
+    color: var(--text-light);
+    font-size: 1rem;
+    font-family: 'Noto Sans Sinhala', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.input-group select:focus {
+    outline: none;
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 3px var(--primary-gold-dim);
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 3px var(--primary-gold-dim);
+}
 
 /* Buttons */
-.submit-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1c1c2e; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
-.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4); }
-.continue-btn { background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); }
-.continue-btn:hover { background: linear-gradient(135deg, #96c93d 0%, #00b09b 100%); }
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem; /* This creates the space between buttons */
+}
+
+.submit-btn {
+    width: 100%;
+    max-width: 400px; /* Prevents buttons from becoming too wide */
+    padding: 12px;
+    background: var(--primary-gold);
+    color: var(--text-dark);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem; /* Reduced font size */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+    text-align: center;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 215, 0, 0.3);
+}
+
 
 /* Loading & Messages */
-.loading-container { text-align: center; padding: 60px 20px; border-radius: 15px; margin: 20px 0; }
-.spinner { width: 60px; height: 60px; border: 4px solid #3a3a4e; border-top: 4px solid #FFD700; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-@keyframes spin { 100% { transform: rotate(360deg); } }
-.loading-container p { color: #FFD700; font-size: 1.2rem; font-weight: 500; }
-.verification-text { text-align: center; font-size: 1.1rem; color: #FFD700; padding-bottom: 1rem; }
-.error-message { background-color: #ff4444; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: 500; }
+.loading-container {
+    text-align: center;
+    padding: 50px 20px;
+    margin: 20px 0;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+    color: var(--primary-gold);
+    font-size: 1.1rem;
+}
+
+.verification-text {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--primary-gold);
+    padding-bottom: 1rem;
+}
+
+.error-message {
+    background-color: var(--error-red);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.info-message {
+    background-color: #007bff; /* A nice blue color */
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+}
 
 /* Astro Details Section */
-.astro-details { background: linear-gradient(135deg, #2a2a3e 0%, #1e1e30 100%); border-radius: 15px; padding: 1rem 2rem; margin-bottom: 2rem; border: 1px solid #3a3a4e; }
-.astro-details ul { list-style: none; padding: 0; }
-.astro-details li { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #3a3a4e; font-size: 1.1rem; }
-.astro-details li:last-child { border-bottom: none; }
-.detail-key { font-weight: 600; color: #FFD700; }
-.detail-value { color: #e6e6e6; }
+.astro-details {
+    background: var(--bg-surface);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+}
 
-/* Charts & Report Sections */
-.report-section, .charts-section { background: linear-gradient(135deg, #2a2a3e 0%, #1e1e30 100%); border-radius: 15px; padding: 40px; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid #3a3a4e; }
-.charts-section { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 2rem; padding-top: 20px; }
-.chart-wrapper { text-align: center; }
-.chart-title { font-size: 1.8rem; font-weight: 600; color: #FFD700; margin-bottom: 1.5rem; }
-.chart-grid { display: grid; grid-template-columns: repeat(4, 80px); grid-template-rows: repeat(4, 80px); border: 2px solid #FFD700; background-color: #1e1e30; grid-template-areas: "pisces aries taurus gemini" "aquarius center center cancer" "capricorn center center leo" "sagittarius scorpio libra virgo"; }
-.chart-box { border: 1px solid #3a3a4e; position: relative; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.sign-name { position: absolute; top: 4px; left: 4px; font-size: 0.8rem; color: #aaa; }
-.house-number { position: absolute; bottom: 4px; right: 5px; font-size: 0.9rem; color: #6a6a8b; font-weight: 700; }
-.planets { font-size: 1.1rem; font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center; line-height: 1.1; }
+.astro-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.astro-details li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.1rem;
+}
+
+.astro-details li:last-child {
+    border-bottom: none;
+}
+
+.detail-key {
+    font-weight: 600;
+    color: var(--primary-gold);
+}
+
+.detail-value {
+    color: var(--text-light);
+}
+
+/* Charts Section */
+.charts-section {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 30px;
+}
+
+.chart-wrapper {
+    text-align: center;
+    flex: 1 1 320px; /* Flexbox for responsive sizing */
+    max-width: 400px;
+}
+.chart-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+
+.chart-grid {
+    display: grid;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border: 2px solid var(--primary-gold);
+    background-color: var(--bg-dark);
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-areas:
+        "pisces aries taurus gemini"
+        "aquarius center center cancer"
+        "capricorn center center leo"
+        "sagittarius scorpio libra virgo";
+}
+
+.chart-box {
+    border: 1px solid var(--border-color);
+    position: relative;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.sign-name {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    color: var(--text-medium);
+}
+
+.house-number {
+    position: absolute;
+    bottom: 4px;
+    right: 5px;
+    font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+    color: #6a6a8b;
+    font-weight: 700;
+}
+
+.planets {
+    font-size: clamp(0.8rem, 3vw, 1rem);
+    font-weight: 600;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.1;
+}
 .planet { font-weight: 500; }
 .lagna-marker { color: #ff6b6b; font-weight: 700; }
 .lagna-box { background-color: rgba(255, 107, 107, 0.1); border: 1px solid #ff6b6b; }
-.center-box { grid-area: center; border: 1px solid #3a3a4e; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.center-title { font-size: 1.8rem; font-weight: 700; color: #FFD700; line-height: 1.2; }
-.center-subtitle { font-size: 1rem; color: #aaa; }
+
+.center-box {
+    grid-area: center;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+.center-title {
+    font-size: clamp(1rem, 5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--primary-gold);
+    line-height: 1.2;
+}
+.center-subtitle {
+    font-size: clamp(0.7rem, 3vw, 0.9rem);
+    color: var(--text-medium);
+}
+
+/* Grid Area Assignments */
 .pisces { grid-area: pisces; } .aries { grid-area: aries; } .taurus { grid-area: taurus; } .gemini { grid-area: gemini; }
 .aquarius { grid-area: aquarius; } .cancer { grid-area: cancer; }
 .capricorn { grid-area: capricorn; } .leo { grid-area: leo; }
 .sagittarius { grid-area: sagittarius; } .scorpio { grid-area: scorpio; } .libra { grid-area: libra; } .virgo { grid-area: virgo; }
 
-.footer { text-align: center; padding: 30px 0; color: #888; font-size: 0.9rem; border-top: 1px solid #3a3a4e; margin-top: 40px; }
+
+/* Report Section */
+.report-section {
+    padding: 0;
+}
+
+.report-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.report-card h3 {
+    color: var(--primary-gold);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.report-card p {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+    font-size: 1.05rem;
+}
+
+.report-card p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 30px 0;
+    color: #888;
+    font-size: 0.9rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 40px;
+}
+
+/* --- Media Queries for Responsiveness --- */
+@media (max-width: 768px) {
+    .form-section {
+        padding: 20px;
+    }
+    .charts-section {
+        flex-direction: column;
+        align-items: center;
+    }
+    .chart-wrapper {
+        flex-basis: auto;
+        width: 95%;
+        max-width: 380px;
+    }
+}
+
+/* --- New Styles for Sticky Header & Auth --- */
+
+/* Sticky Header */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-dark);
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 4000;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex; /* Make it a flex container */
+    align-items: center; /* Vertically center items */
+    justify-content: space-between; /* Distribute items with space between them */
+    height: 100%; /* Ensure it fills header height */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Adjust this value to change the space between the icon and logo */
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--primary-gold);
+}
+
+.logo-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.header-button {
+    background: transparent;
+    border: 1px solid var(--primary-gold);
+    color: var(--primary-gold);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.header-button:hover {
+    background-color: var(--primary-gold);
+    color: var(--text-dark);
+}
+
+#user-identifier-header {
+    color: var(--text-light);
+    margin-right: 0.5rem;
+}
+
+/* Add these styles to your style.css file */
+
+#user-identifier-header {
+    color: var(--text-light);
+    margin-right: 0.5rem;
+
+    /* --- New styles for mobile optimization --- */
+    white-space: nowrap;      /* Prevents the text from wrapping to a new line */
+    overflow: hidden;         /* Hides any text that overflows the element's box */
+    text-overflow: ellipsis;  /* Adds the "..." to the end of the hidden text */
+    max-width: 150px;         /* Crucial: Sets a max width to trigger the overflow */
+}
+
+/* Adjust the max-width on very small screens if needed */
+@media (max-width: 380px) {
+    #user-identifier-header {
+        max-width: 100px; /* Even smaller max-width for very narrow devices */
+    }
+}
+
+
+/* Main Title Section (replaces old header style) */
+.main-title-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 20px;
+}
+
+
+/* Auth Modal (Pop-up) Styles */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--bg-surface);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--text-medium);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-modal-btn:hover {
+    color: var(--text-light);
+}
+
+.auth-form h3 {
+    text-align: center;
+    color: var(--primary-gold);
+    margin-bottom: 1.5rem;
+}
+
+.auth-toggle {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-medium);
+}
+
+.auth-toggle a {
+    color: var(--primary-gold);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.auth-toggle a:hover {
+    text-decoration: underline;
+}
+
+.forgot-password {
+    display: block;
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--text-medium);
+    margin-top: -10px;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+.forgot-password:hover {
+    color: var(--primary-gold);
+}
+
+/* --- Off-Canvas Menu Styles --- */
+
+/* 1. Hamburger Icon Button */
+.menu-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    outline: none;
+}
+
+.menu-toggle-btn span {
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-light);
+    border-radius: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Animation for Hamburger to 'X' */
+.menu-toggle-btn.is-active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.menu-toggle-btn.is-active span:nth-child(2) {
+    opacity: 0;
+}
+.menu-toggle-btn.is-active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+
+/* 2. The Off-Canvas Menu Panel */
+.offcanvas-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border-color);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+    padding-top: 80px; /* Space for the header */
+    transform: translateX(-100%); /* Hidden off-screen by default */
+    transition: transform 0.3s ease-in-out;
+    z-index: 3000;
+}
+
+.offcanvas-menu.is-open {
+    transform: translateX(0); /* Slides the menu into view */
+}
+
+/* 3. Menu Links */
+.offcanvas-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.offcanvas-menu li a {
+    display: block;
+    padding: 15px 25px;
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.offcanvas-menu li:first-child a {
+    border-top: 1px solid var(--border-color);
+}
+
+.offcanvas-menu li a:hover {
+    background-color: var(--primary-gold);
+    color: var(--text-dark);
+}

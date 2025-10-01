@@ -1,0 +1,93 @@
+/* Styles for the main content card */
+.about-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Container for the image */
+.image-container {
+    flex-shrink: 0; /* Prevents the image from shrinking */
+}
+
+/* The profile image itself */
+.profile-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%; /* Makes the image a circle */
+    border: 3px solid var(--primary-gold);
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+}
+
+/* Container for the text information */
+.info-container {
+    text-align: left;
+}
+
+.profile-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin: 0 0 0.5rem 0;
+}
+
+.profile-description {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+/* Social media links section */
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--bg-surface-accent);
+    transition: all 0.2s ease-in-out;
+}
+
+.social-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-medium);
+    transition: fill 0.2s ease-in-out;
+}
+
+.social-btn:hover {
+    transform: translateY(-3px);
+}
+
+.social-btn:hover svg {
+    fill: var(--primary-gold);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .about-card {
+        flex-direction: column; /* Stack image and text vertically */
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .info-container {
+        text-align: center;
+    }
+    .social-links {
+        justify-content: center; /* Center the social icons */
+    }
+}

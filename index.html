@@ -10,35 +10,121 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header class="sticky-header">
+    <div class="header-content">
+            <div class="header-left">
+                <button id="menu-toggle" class="menu-toggle-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="logo">දෛවය</div> </div>
+        <nav class="header-nav" id="auth-buttons">
+            <button id="login-btn" class="header-button">Login</button>
+            <button id="signup-btn" class="header-button">Sign Up</button>
+        </nav>
+        <div class="header-nav" id="user-display" style="display: none;">
+            <span id="user-identifier-header"></span>
+            <button id="logout-btn-header" class="header-button">Logout</button>
+        </div>
+    </div>
+</header>
+<nav id="offcanvas-menu" class="offcanvas-menu">
+        <ul>
+            <li><a href="index.html">මුල් පිටුව</a></li>
+            <li><a href="porondam/porondam.html">පොරොන්දම්</a></li>
+            <li><a href="combined-reading/coming-soon.html">ඒකාබද්ධ පලාපල</a></li>
+            <li><a href="legal/policies.html">ප්‍රතිපත්ති</a></li>
+            <li><a href="about/about.html">අප ගැන</a></li>
+        </ul>
+    </nav>
+<div id="auth-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-content">
+        <button id="close-modal-btn" class="close-modal-btn">&times;</button>
+
+         <div id="auth-message-container"></div>
+        
+        <form id="login-form" class="auth-form">
+            <h3>පිවිසෙන්න (Login)</h3>
+            <div class="input-group">
+                <label for="login-email">විද්‍යුත් තැපෑල (Email):</label>
+                <input type="email" id="login-email" placeholder="you@example.com" required>
+            </div>
+            <div class="input-group">
+                <label for="login-password">මුරපදය (Password):</label>
+                <input type="password" id="login-password" required>
+            </div>
+
+            <a href="#" id="forgot-password-link" class="forgot-password">Forgot Password?</a>
+
+            <button type="submit" class="submit-btn" id="login-submit-btn">පිවිසෙන්න</button>
+            
+            <button type="button" class="submit-btn" id="send-reset-btn" style="display: none;">Send Reset Link</button>
+
+            <p class="auth-toggle" id="auth-toggle-p">ගිණුමක් නැද්ද? <a href="#" id="show-signup">ලියාපදිංචි වන්න</a></p>
+            
+            <p class="auth-toggle" id="back-to-login-p" style="display: none;"><a href="#" id="back-to-login-link">Back to Login</a></p>
+        </form>
+        <form id="signup-form" class="auth-form" style="display: none;">
+            <h3>ලියාපදිංචි වන්න (Sign Up)</h3>
+            <div class="input-group">
+                <label for="signup-email">විද්‍යුත් තැපෑල (Email):</label>
+                <input type="email" id="signup-email" placeholder="you@example.com" required>
+            </div>
+            <div class="input-group">
+                <label for="signup-password">මුරපදය (Password):</label>
+                <input type="password" id="signup-password" minlength="6" required>
+            </div>
+            <div class="input-group">
+                        <label for="signup-password-confirm">මුරපදය තහවුරු කරන්න (Confirm Password):</label>
+                        <input type="password" id="signup-password-confirm" minlength="6" required>
+                    </div>
+            <button type="submit" class="submit-btn">ලියාපදිංචි වන්න</button>
+             <p class="auth-toggle">දැනටමත් ගිණුමක් තිබේද? <a href="#" id="show-login">පිවිසෙන්න</a></p>
+        </form>
+    </div>
+</div>
     <div class="container">
-        <header class="header">
-            <h1 class="app-title">දෛවය</h1>
-            <p class="subtitle">ශ්‍රී ලාංකික ජ්‍යෝතිෂ පලාපල පද්ධතිය</p>
-        </header>
+        <div class="main-title-section">
+    <h1 class="app-title">දෛවය</h1>
+    <p class="subtitle">කෘත්‍රිම බුද්ධියෙන් බලගැන්වූ ශ්‍රී ලංකාවේ පළමු හඳහන් කියවනය</p>
+</div>
         <div id="message-container"></div>
         <section class="form-section">
-            <div class="form-container">
-                <form id="birth-data-form">
-                    <div class="input-group">
-                        <label for="birth-date">ජන්ම දිනය:</label>
-                        <input type="date" id="birth-date" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="birth-time">ජන්ම වේලාව:</label>
-                        <input type="time" id="birth-time" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="birth-place">ජන්ම ස්ථානය:</label>
-                        <input type="text" id="birth-place" placeholder="උදා: කොළඹ, ශ්‍රී ලංකාව" required>
-                    </div>
+            <form id="birth-data-form">
+                <div class="input-group">
+                    <label for="birth-date">ජන්ම දිනය:</label>
+                    <input type="date" id="birth-date" required>
+                </div>
+                <div class="input-group">
+                    <label for="birth-time">ජන්ම වේලාව:</label>
+                    <input type="time" id="birth-time" required>
+                </div>
+                <div class="input-group">
+                    <label for="birth-place">ජන්ම ස්ථානය:</label>
+                    <input type="text" id="birth-place" placeholder="උදා: කොළඹ, ශ්‍රී ලංකාව" required>
+                </div>
+                <div class="input-group">
+                    <label for="gender">ස්ත්‍රී/ පුරුශ බව:</label>
+                    <select id="gender" required>
+                        <option value="">තෝරන්න</option>
+                        <option value="male">පුරුෂ</option>
+                        <option value="female">ස්ත්‍රී</option>
+                    </select>
+                </div>
+                <div class="button-container">
                     <button type="submit" id="generate-charts-button" class="submit-btn">
                         කේන්ද්‍ර සටහන් බලන්න
                     </button>
-                    <button type="button" id="continue-button" class="submit-btn continue-btn" style="display: none; margin-top: 1rem;">
+                    <!-- Action buttons are now siblings and will be shown/hidden with JS -->
+                    <button type="button" id="continue-button" class="submit-btn" style="display: none;">
                         සටහන් නිවැරදියි - පලාපල විස්තරය ලබාගන්න
                     </button>
-                </form>
-            </div>
+                    <button type="button" id="reset-button" class="submit-btn" style="display: none;">
+                        මුල සිට අරඹන්න
+                    </button>
+                </div>
+            </form>
         </section>
         <p id="verification-message" class="verification-text" style="display: none;">
             කරුණාකර පහත කේන්ද්‍ර සටහන් සහ තොරතුරු නිවැරදි දැයි තහවුරු කරන්න.
@@ -48,12 +134,20 @@
             <div class="spinner"></div>
             <p id="loading-text">කරුණාකර රැඳී සිටින්න...</p>
         </div>
-        <section id="charts-container" class="charts-section" style="display: none;"></section>
-        <section id="report-container" class="report-section" style="display: none;"></section>
+        <div id="results-container">
+             <section id="charts-container" class="charts-section" style="display: none;"></section>
+             <section id="report-container" class="report-section" style="display: none;"></section>
+             <div id="pdf-actions" style="display: none; text-align: center; margin: 20px 0;">
+                 <button id="download-pdf-btn" class="submit-btn">PDF බාගත කරන්න</button>
+             </div>
+        </div>
         <footer class="footer">
              <p>© 2025 දෛවය</p>
         </footer>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+

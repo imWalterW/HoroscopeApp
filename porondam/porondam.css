@@ -1,0 +1,101 @@
+/* --- Styles for Porondam Page --- */
+/* Person blocks for results */
+.person-block {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.person-block h3 {
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.person-block .charts-section {
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .person-block {
+        padding: 1rem;
+    }
+}
+
+/* Main two-column layout for the forms */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns on larger screens */
+    gap: 2rem; /* Creates space between the two columns */
+    margin-bottom: 2rem;
+}
+
+/* Styling for each person's input column */
+.form-person-column {
+    background-color: var(--bg-surface-accent);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.person-title {
+    color: var(--primary-gold);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+/* --- Responsive styles for smaller screens --- */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Stack the columns on top of each other on mobile */
+    }
+}
+
+/* In porondam.css */
+
+/* Specific styling for the score card */
+.score-card {
+    text-align: center;
+    background: var(--bg-surface-accent);
+}
+
+.score-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin: 0.5rem 0 0 0 !important; /* Ensure spacing is correct */
+}
+
+/* Base style for the status badge */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+/* Style for a successful match */
+.status-match {
+    background-color: #2ecc71; /* Green */
+}
+
+/* Style for a mismatch */
+.status-mismatch {
+    background-color: #e74c3c; /* Red */
+}
+
+/* In porondam.css, add this to the end */
+
+/* Special styling for the final summary card */
+.summary-card {
+    border: 1px solid var(--primary-gold);
+    background: var(--primary-gold-dim);
+}

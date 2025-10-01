@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ඉක්මනින් පැමිණේ - දෛවය</title>
+    <!-- Links to stylesheets -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="coming-soon.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Consistent Sticky Header -->
+    <header class="sticky-header">
+        <div class="header-content">
+            <div class="header-left">
+                <button id="menu-toggle" class="menu-toggle-btn">
+                    <span></span><span></span><span></span>
+                </button>
+                <div class="logo"><a href="../index.html" class="logo-link">දෛවය</a></div>
+            </div>
+            <nav class="header-nav" id="auth-buttons">
+                <button id="login-btn" class="header-button">Login</button>
+                <button id="signup-btn" class="header-button">Sign Up</button>
+            </nav>
+            <div class="header-nav" id="user-display" style="display: none;">
+                <span id="user-identifier-header"></span>
+                <button id="logout-btn-header" class="header-button">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Consistent Off-Canvas Menu -->
+    <nav id="offcanvas-menu" class="offcanvas-menu">
+        <ul>
+            <li><a href="../index.html">මුල් පිටුව</a></li>
+            <li><a href="../porondam/porondam.html">පොරොන්දම්</a></li>
+            <li><a href="coming-soon.html">ඒකාබද්ධ පලාපල</a></li>
+            <li><a href="../legal/policies.html">ප්‍රතිපත්ති</a></li>
+            <li><a href="../about/about.html">අප ගැන</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content for the Coming Soon Page -->
+    <div class="container">
+        <div class="coming-soon-container">
+            <h1 class="app-title">ඒකාබද්ධ පලාපල</h1>
+            <p class="subtitle">මෙම විශේෂාංගය ඉක්මනින් පැමිණේ!</p>
+            <p>මෙමගින් ඔබට පුද්ගලයන් කිහිප දෙනෙකුගේ කේන්ද්‍ර සටහන් එකවර සංසන්දනය කර බලා ගැනීමට අවස්ථාව හිමිවේ.</p>
+            <a href="../index.html" class="submit-btn home-btn">මුල් පිටුවට යන්න</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2025 දෛවය</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="coming-soon.js"></script>
+</body>
+</html>
