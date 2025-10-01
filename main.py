@@ -7,15 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, List
 from geopy.geocoders import Nominatim
-from dotenv import load_dotenv
 from datetime import timedelta
 import json
 import re
 import google.generativeai as genai
 from supabase import create_client, Client
 
-# --- Load Environment Variables ---
-load_dotenv()
 
 # --- App Initialization ---
 app = FastAPI()
@@ -491,4 +488,5 @@ async def deduct_pdf_credit(authorization: str = Header(None)):
         if isinstance(e, HTTPException):
             raise e
         raise HTTPException(status_code=500, detail=f"An error occurred while deducting PDF credit: {str(e)}")
+
    
