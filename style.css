@@ -552,14 +552,14 @@ body {
 }
 
 .modal-content::-webkit-scrollbar-thumb {
-    background-color: var(--primary-gold); /* Color of the scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for the thumb */
-    border: 2px solid transparent; /* Gives a slight padding effect around the thumb */
-    background-clip: padding-box; /* Ensures border property doesn't expand the thumb */
+    background-color: var(--border-color); /* A subtle dark grey from your theme */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 .modal-content::-webkit-scrollbar-thumb:hover {
-    background-color: var(--primary-gold); /* Slightly darker or same color on hover */
+    background-color: #555555; /* A slightly lighter grey for the hover effect */
 }
 
 /* Optional: Hide scrollbar buttons if desired */
