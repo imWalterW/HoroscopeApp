@@ -541,6 +541,8 @@ body {
     width: 90%;
     max-width: 420px;
     position: relative;
+    max-height: 90vh; /* This stops the modal from growing taller than the screen */
+    overflow-y: auto;   /* This adds a scrollbar ONLY if the content is too tall */
 }
 
 .close-modal-btn {
@@ -681,8 +683,3 @@ body {
 }
 
 /* In style.css */
-
-/* --- NEW ROBUST FIX for Auth Modal Spacing --- */
-#auth-message-container:not(:empty) ~ .auth-form h3 {
-    margin-top: 1.5rem;
-}
