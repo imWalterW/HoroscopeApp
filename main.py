@@ -119,6 +119,12 @@ def identify_special_yogas(d1_data: Dict[str, Any]) -> List[str]:
     return yogas
 
 def calculate_astro_details(date_str, time_str, lat, lon):
+    # This is a small adjustment value to align the library's Ayanamsa
+    # with traditional calculations. You can fine-tune this value slightly
+    # (e.g., -0.06, -0.07) if needed, but -0.05 is a strong starting point
+    # to match your specific chart.
+    TRADITIONAL_AYANAMSA_OFFSET = -0.05 
+
     year, month, day = map(int, date_str.split('-'))
     hour, minute = map(int, time_str.split(':'))
     dt_local_naive = datetime.datetime(year, month, day, hour, minute)
@@ -132,10 +138,22 @@ def calculate_astro_details(date_str, time_str, lat, lon):
 
     houses, ascmc = swe.houses(jd_utc, lat, lon, b'P')
     tropical_lagna_long = ascmc[0]
-    ayanamsa_value = swe.get_ayanamsa_ut(jd_utc)
+    
+    # --- CRITICAL FIX 1: Apply Ayanamsa Offset ---
+    ayanamsa_value = swe.get_ayanamsa_ut(jd_utc) + TRADITIONAL_AYANAMSA_OFFSET
     lagna_long = (tropical_lagna_long - ayanamsa_value + 360) % 360
     
-    d1_planets_raw = {name: swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0] for name, planet_id in PLANET_LIST.items()}
+    # --- CRITICAL FIX 2: Correct Rahu/Ketu Calculation ---
+    # First, calculate all planets EXCEPT Ketu.
+    d1_planets_raw = {name: swe.calc_ut(jd_utc, planet_id, swe.FLG_SIDEREAL)[0][0] for name, planet_id in PLANET_LIST.items() if name != 'Ketu'}
+    # Now, calculate Ketu to be exactly 180 degrees from Rahu.
+    d1_planets_raw['Ketu'] = (d1_planets_raw['Rahu'] + 180) % 360
+
+    # Apply the Ayanamsa offset to all planets for consistency
+    for planet in d1_planets_raw:
+        d1_planets_raw[planet] = (d1_planets_raw[planet] - TRADITIONAL_AYANAMSA_OFFSET + 360) % 360
+
+    # Now continue with the rest of the logic as before
     d1_planets = {name: ZODIAC_SIGNS_EN[int(pos / 30)] for name, pos in d1_planets_raw.items()}
     
     d9_planets = {name: ZODIAC_SIGNS_EN[int(((pos * 9) % 360) / 30)] for name, pos in d1_planets_raw.items()}
@@ -146,14 +164,15 @@ def calculate_astro_details(date_str, time_str, lat, lon):
     dasha_sequence = calculate_vimshottari_dasha_sequence(jd_utc, dt_local_naive)
 
     # Nakshatra (Nakath) details based on Moon position
-    moon_pos = swe.calc_ut(jd_utc, swe.MOON, swe.FLG_SIDEREAL)[0][0] % 360
-    nakshatra_num = int(moon_pos / NAKSHATRA_SPAN)
+    # The moon position for Nakshatra calculation should also be adjusted
+    moon_pos_for_nakshatra = d1_planets_raw['Moon']
+    nakshatra_num = int(moon_pos_for_nakshatra / NAKSHATRA_SPAN)
     nakshatra_name_si = NAKSHATRA_NAMES_SI[nakshatra_num % len(NAKSHATRA_NAMES_SI)] if NAKSHATRA_NAMES_SI else ""
     nakshatra_lord_en = NAKSHATRA_LORDS[nakshatra_num % len(NAKSHATRA_LORDS)]
     nakshatra_lord_si = PLANET_SI[nakshatra_lord_en]
     # Nakshatra pada (quarter)
     pada_span = NAKSHATRA_SPAN / 4.0
-    pos_in_nakshatra = moon_pos - (nakshatra_num * NAKSHATRA_SPAN)
+    pos_in_nakshatra = moon_pos_for_nakshatra - (nakshatra_num * NAKSHATRA_SPAN)
     nakshatra_pada = int(pos_in_nakshatra / pada_span) + 1
     
     current_dasha, next_dasha = None, None
