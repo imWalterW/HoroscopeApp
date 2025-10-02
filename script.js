@@ -411,7 +411,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         if (error) {
             showAuthMessage(`Signup Error: ${error.message}`);
         } else {
-            showAuthMessage('Success! Please check your email for a confirmation link.', 'info');
+            showAuthMessage('Success! Please check your email for a confirmation link. Make sure to check your Junk/Spam folders.', 'info');
         }
     });
 
