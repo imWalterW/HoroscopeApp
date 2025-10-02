@@ -682,7 +682,7 @@ body {
 
 /* In style.css */
 
-/* --- FIX for Auth Modal Spacing --- */
-#auth-message-container:not(:empty) {
-    margin-bottom: 1rem; 
+/* --- NEW ROBUST FIX for Auth Modal Spacing --- */
+#auth-message-container:not(:empty) ~ .auth-form h3 {
+    margin-top: 1.5rem;
 }
