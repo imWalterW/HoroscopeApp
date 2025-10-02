@@ -679,3 +679,12 @@ body {
     background-color: var(--primary-gold);
     color: var(--text-dark);
 }
+
+/* In style.css */
+
+/* --- FIX for Auth Modal Spacing --- */
+
+/* This targets the <h3> inside the auth form ONLY when it directly follows a message container */
+#auth-message-container + .auth-form h3 {
+    margin-top: 1rem; /* Adjust this value if you need more or less space */
+}
