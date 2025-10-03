@@ -76,6 +76,17 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         pdfActions.style.display = 'none';
     };
 
+    // --- NEW Social Login Helper Function ---
+    const signInWithProvider = async (provider) => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: provider,
+        });
+        if (error) {
+            showAuthMessage(`Error signing in with ${provider}: ${error.message}`);
+        }
+        // No 'else' needed, Supabase handles the redirect
+    };
+
     const showLoading = (message) => {
         loadingText.textContent = message;
         loadingIndicator.style.display = 'block';
@@ -512,6 +523,18 @@ supabase.auth.onAuthStateChange((event, session) => {
         menuToggle.classList.toggle('is-active');
         offcanvasMenu.classList.toggle('is-open');
     });
+
+    // --- NEW Event Listeners for Social Logins ---
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const facebookLoginBtn = document.getElementById('facebook-login-btn');
+    const googleSignupBtn = document.getElementById('google-signup-btn');
+    const facebookSignupBtn = document.getElementById('facebook-signup-btn');
+
+    googleLoginBtn.addEventListener('click', () => signInWithProvider('google'));
+    googleSignupBtn.addEventListener('click', () => signInWithProvider('google'));
+
+    facebookLoginBtn.addEventListener('click', () => signInWithProvider('facebook'));
+    facebookSignupBtn.addEventListener('click', () => signInWithProvider('facebook'));
 
     // --- Initial Setup ---
     resetUI();
