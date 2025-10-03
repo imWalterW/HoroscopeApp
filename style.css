@@ -704,7 +704,7 @@ body {
     color: var(--text-dark);
 }
 
-/* --- Social Login Buttons --- */
+/* --- Social Login Buttons (Improved) --- */
 .social-login-divider {
     display: flex;
     align-items: center;
@@ -729,18 +729,51 @@ body {
 }
 .social-btn {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     border: 1px solid var(--border-color);
-    background-color: var(--bg-surface-accent);
+    background-color: var(--bg-surface);
     color: var(--text-light);
     transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
 }
 .social-btn:hover {
     background-color: #3c3c40;
 }
+.social-btn.google {
+    background-color: #FFFFFF;
+    color: #444444;
+    border-color: #dddddd;
+}
+.social-btn.google:hover {
+    background-color: #f1f1f1;
+}
+.social-btn.facebook {
+    background-color: #1877F2;
+    color: #FFFFFF;
+    border-color: #1877F2;
+}
+.social-btn.facebook:hover {
+    background-color: #166fe5;
+}
+.social-btn.facebook svg {
+    fill: #FFFFFF; /* Make the facebook icon white */
+}
 
-/* In style.css */
+/* --- Auth Modal Font Size Reduction --- */
+.auth-form h3 {
+    font-size: 1.0rem; /* Reduce title size */
+}
+.auth-form .input-group label {
+    font-size: 0.85rem; /* Reduce label size */
+    margin-bottom: 8px;
+}
+.auth-form .input-group {
+    margin-bottom: 0.9rem; /* Reduce space between fields */
+}
